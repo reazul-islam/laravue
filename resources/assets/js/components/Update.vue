@@ -3,7 +3,7 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Modal title</p>
+                <p class="modal-card-title">Update {{list.name}}</p>
                 <button class="delete" aria-label="close" @click="close"></button>
             </header>
             <section class="modal-card-body">
@@ -28,7 +28,7 @@
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-success" @click="save">Save</button>
+                <button class="button is-success" @click="update">Update</button>
                 <button class="button" @click="close">Cancel</button>
             </footer>
         </div>
@@ -40,46 +40,34 @@
         props: ['openmodal'],
 
         data(){
-           return {
-               list: {
-                   name: '',
-                   phone: '',
-                   email: '',
-               },
-               errors: {
+            return {
+                list: {
+                    name: '',
+                    phone: '',
+                    email: '',
+                },
+                errors: {
 
-               }
-           }
+                }
+            }
         },
         methods: {
             close(){
                 this.$emit('closeRequest')
             },
-            save(){
-                axios.post('/phonebook',this.list)
+            update(){
+                axios.put('/phonebook/'+this.list.id,this.list)
                     .then(response => {
                         // JSON responses are automatically parsed.
+                        console.log(response.data);
                         this.close();
                         //this.posts = response.data
-                        this.$parent.lists.push(response.data);
-                        this.$parent.lists.sort(function (a,b) {
-                            if(a.name > b.name){
-                                return 1;
-                            }else if(a.name < b.name){
-                                return -1;
-                            }
-                        })
 
                     })
                     .catch(e => {
                         console.log(e);
                         this.errors = e.response.data.errors;
                     })
-                this.list={
-                    name: '',
-                    phone: '',
-                    email: '',
-                };
 
             }
         }

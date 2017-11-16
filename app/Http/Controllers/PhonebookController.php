@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PhonebookRequest;
 use App\Phonebook;
 use Illuminate\Http\Request;
 
@@ -33,17 +34,14 @@ class PhonebookController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PhonebookRequest $request)
     {
         $p = new Phonebook();
         $p->name = $request->name;
         $p->email = $request->email;
         $p->phone = $request->phone;
         $p->save();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data inserted successfully'
-        ]);
+        return $p;
     }
 
     /**
@@ -75,9 +73,17 @@ class PhonebookController extends Controller
      * @param  \App\Phonebook $phonebook
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Phonebook $phonebook)
+    public function update(PhonebookRequest $request, Phonebook $phonebook)
     {
-        //
+        $p = Phonebook::find($request->id);
+        $p->name = $request->name;
+        $p->email = $request->email;
+        $p->phone = $request->phone;
+        $p->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data updated successfully'
+        ]);
     }
 
     /**
@@ -86,8 +92,17 @@ class PhonebookController extends Controller
      * @param  \App\Phonebook $phonebook
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Phonebook $phonebook)
+    public function destroy($id)
     {
-        //
+        Phonebook::find($id)->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data deleted successfully'
+        ]);
+    }
+
+    public function getData()
+    {
+        return Phonebook::orderBy('name','ASC')->get();
     }
 }

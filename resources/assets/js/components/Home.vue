@@ -18,41 +18,83 @@
                 </p>
             </div>
 
-            <a class="panel-block">
+            <a class="panel-block" v-for="(item,index) in lists">
             <span class="column is-9">
-                Marksheet
+                {{item.name}}
             </span>
 
                 <span class="panel-icon column is-1">
-              <i class="fa fa-trash hax-text-danger"></i>
+              <i class="fa fa-trash hax-text-danger"  @click="del(index,item.id)"></i>
             </span>
                 <span class="panel-icon column is-1">
-              <i class="fa fa-edit has-text-info"></i>
+              <i class="fa fa-edit has-text-info" @click="openUpdate(index)"></i>
             </span>
                 <span class="panel-icon column is-1">
-              <i class="fa fa-eye has-text-primary"></i>
+              <i class="fa fa-eye has-text-primary" @click="openShow(index)"></i>
             </span>
             </a>
         </nav>
         <Add :openmodal="addActive" @closeRequest="close"></Add>
+        <Show :openmodal="showActive" @closeRequest="close"></Show>
+        <Update :openmodal="updateActive" @closeRequest="close"></Update>
     </div>
 
 </template>
 <script>
     let Add = require('./Add.vue')
+    let Show = require('./Show.vue')
+    let Update = require('./Update.vue')
     export default {
-        components: {Add},
-        data(){
+        components: {Add,Show,Update},
+        data() {
             return {
-                addActive : ''
+                addActive: '',
+                showActive: '',
+                updateActive: '',
+                lists: {},
+                errors: {},
             }
         },
+        mounted() {
+            axios.get('/getData', this.list)
+                .then(response => {
+                    this.lists = response.data
+
+                })
+                .catch(e => {
+                    console.log(e);
+                    this.errors = e.response.data.errors;
+                })
+        },
         methods: {
-            openAdd(){
+            openAdd() {
                 this.addActive = 'is-active';
             },
-            close(){
-                this.addActive='';
+            close() {
+                this.addActive = '';
+                this.showActive = '';
+                this.updateActive = '';
+            },
+            openShow(index) {
+                this.showActive = 'is-active';
+                this.$children[1].list = this.lists[index]
+            },
+            openUpdate(index) {
+                this.updateActive = 'is-active';
+                this.$children[2].list = this.lists[index]
+            },
+            del(index,id) {
+
+                if(confirm('Are your sure')){
+                    axios.delete(`/phonebook/${id}`,this.list)
+                        .then(response => {
+                            this.lists.splice(index,1);
+                        })
+                        .catch(e => {
+                            console.log(e);
+                        })
+                }
+
             }
         }
     }
