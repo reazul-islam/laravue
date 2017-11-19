@@ -3,27 +3,27 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Update {{list.name}}</p>
+                <p class="modal-card-title">Update {{list1.name}}</p>
                 <button class="delete" aria-label="close" @click="close"></button>
             </header>
             <section class="modal-card-body">
                 <div class="field">
                     <label class="label">Name</label>
                     <div class="control">
-                        <input class="input" :class="{'is-danger': errors.name}" type="text" placeholder="Name" v-model="list.name">
+                        <input class="input" :class="{'is-danger': errors.name}" type="text" placeholder="Name" v-model="list1.name">
                         <small v-if="errors.name" class="has-text-danger">{{ errors.name[0] }}</small>
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Phone</label>
                     <div class="control">
-                        <input class="input" type="number" placeholder="phone" v-model="list.phone">
+                        <input class="input" type="number" placeholder="phone" v-model="list1.phone">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Email</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="email" v-model="list.email">
+                        <input class="input" type="text" placeholder="email" v-model="list1.email">
                     </div>
                 </div>
             </section>
@@ -41,7 +41,7 @@
 
         data(){
             return {
-                list: {
+                list1: {
                     name: '',
                     phone: '',
                     email: '',
@@ -56,7 +56,7 @@
                 this.$emit('closeRequest')
             },
             update(){
-                axios.put('/phonebook/'+this.list.id,this.list)
+                axios.put('/phonebook/'+this.list1.id,this.list1)
                     .then(response => {
                         // JSON responses are automatically parsed.
                         console.log(response.data);

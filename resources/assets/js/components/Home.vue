@@ -11,20 +11,20 @@
             </div>
             <div class="panel-block">
                 <p class="control has-icons-left">
-                    <input class="input is-small" type="text" placeholder="search">
+                    <input class="input is-small" type="text" placeholder="search" v-model="searchQuery">
                     <span class="icon is-small is-left">
         <i class="fa fa-search"></i>
       </span>
                 </p>
             </div>
 
-            <a class="panel-block" v-for="(item,index) in lists">
+            <a class="panel-block" v-for="(item,index) in tmp">
             <span class="column is-9">
                 {{item.name}}
             </span>
 
                 <span class="panel-icon column is-1">
-              <i class="fa fa-trash hax-text-danger"  @click="del(index,item.id)"></i>
+              <i class="fa fa-trash hax-text-danger" @click="del(index,item.id)"></i>
             </span>
                 <span class="panel-icon column is-1">
               <i class="fa fa-edit has-text-info" @click="openUpdate(index)"></i>
@@ -45,20 +45,36 @@
     let Show = require('./Show.vue')
     let Update = require('./Update.vue')
     export default {
-        components: {Add,Show,Update},
+        components: {Add, Show, Update},
         data() {
             return {
                 addActive: '',
                 showActive: '',
                 updateActive: '',
                 lists: {},
+                tmp: {},
                 errors: {},
+                searchQuery: '',
+            }
+        },
+        watch: {
+            searchQuery() {
+                if (this.searchQuery.length > 0) {
+                    this.tmp = this.lists.filter((item) => {
+                        return Object.keys(item).some((key) => {
+                            let string = String(item[key]);
+                            return string.toLowerCase().indexOf(this.searchQuery.toLowerCase()) > -1;
+                        });
+                    })
+                } else {
+                    this.tmp = this.lists;
+                }
             }
         },
         mounted() {
             axios.get('/getData', this.list)
                 .then(response => {
-                    this.lists = response.data
+                    this.lists = this.tmp = response.data
 
                 })
                 .catch(e => {
@@ -77,18 +93,18 @@
             },
             openShow(index) {
                 this.showActive = 'is-active';
-                this.$children[1].list = this.lists[index]
+                this.$children[1].list = this.tmp[index]
             },
             openUpdate(index) {
                 this.updateActive = 'is-active';
-                this.$children[2].list = this.lists[index]
+                this.$children[2].list1 = this.tmp[index]
             },
-            del(index,id) {
+            del(index, id) {
 
-                if(confirm('Are your sure')){
-                    axios.delete(`/phonebook/${id}`,this.list)
+                if (confirm('Are your sure')) {
+                    axios.delete(`/phonebook/${id}`, this.list)
                         .then(response => {
-                            this.lists.splice(index,1);
+                            this.lists.splice(index, 1);
                         })
                         .catch(e => {
                             console.log(e);
